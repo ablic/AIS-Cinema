@@ -1,0 +1,20 @@
+﻿@model List<AIS_Cinema.ViewModels.MovieCard>
+@{
+    ViewData["Title"] = "Афиша";
+}
+
+<div class="row row-cols-1 row-cols-md-4 g-4">
+    @foreach (var card in Model)
+    {
+        <div class="col">
+            <a asp-action="Details" asp-route-id="@card.MovieId" class="text-decoration-none">
+                <div class="card text-center h-100">
+                    <img src="@("~/" + ImageWorker.FolderName + "/" + card.PosterPath)" asp-append-version="true" class="card-img-top movie-poster" alt="@card.Title">
+                    <div class="card-body">
+                        <h5 class="card-title text-dark">@card.Title</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+</div>

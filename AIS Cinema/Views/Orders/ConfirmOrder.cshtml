@@ -1,0 +1,59 @@
+﻿@model AIS_Cinema.ViewModels.OrderConfirmation
+@{
+    ViewData["Title"] = "Подтверждение покупки";
+}
+
+<ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+        <span class="nav-link">Выбор мест</span>
+    </li>
+    <li class="nav-item">
+        <span class="nav-link">Отправка билетов</span>
+    </li>
+    <li class="nav-item">
+        <span class="nav-link active">Подтверждение покупки</span>
+    </li>
+</ul>
+
+<div>
+    <h4>Проверьте указанные данные:</h4>
+    <dl class="row">
+        <dt class="col-sm-2">
+            Фильм
+        </dt>
+        <dd class="col-sm-10">
+            @Model.MovieName
+        </dd>
+        <dt class="col-sm-2">
+            Дата проведения сеанса
+        </dt>
+        <dd class="col-sm-10">
+            @Model.DateTimeStr
+        </dd>
+        <dt class="col-sm-2">
+            Выбранные места
+        </dt>
+        <dd class="col-sm-10">
+            @foreach (var seat in Model.Seats)
+            {
+                @seat <br/>
+            }
+        </dd>
+        <dt class="col-sm-2">
+            Электронная почта для отправки билетов
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Email
+        </dd>
+        <dt class="col-sm-2">
+            Итоговая сумма
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Price
+        </dd>
+    </dl>
+</div>
+
+<div class="form-group">
+    <a asp-action="Pay" class="btn btn-primary">Оплатить</a>
+</div>

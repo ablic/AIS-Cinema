@@ -1,0 +1,45 @@
+﻿@model AIS_Cinema.Areas.Admin.ViewModels.MovieCountries
+
+@{
+    ViewData["Title"] = "Привязка стран";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h4>Привязка стран к фильму "@Model.MovieName"</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="BindCountries">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" name="MovieId" value="@Model.MovieId" />
+
+            @foreach (Country country in Model.AllCountries)
+            {
+                @* <div class="form-check">
+            <input type="checkbox" th:field="*{genres}" th:value="${genre.id}" th:checked="${movie.genres.contains(genre)}" class="form-check-input" th:id="'flexCheckDefault' + ${genre.id}" />
+            <label th:text="${genre.name}" class="form-check-label" th:for="'flexCheckDefault' + ${genre.id}" />
+            </div> *@
+
+                <div class="form-check">
+                    <input type="checkbox" name="@nameof(Model.SelectedCountryIds)" value="@country.Id" class="form-check-input" @(Model.SelectedCountryIds.Contains(country.Id) ? "checked" : "") />
+                    <label class="form-check-label">@country.ShortName</label>
+                </div>
+            }
+
+            <div class="form-group">
+                <input type="submit" value="Сохранить" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mt-2">
+    <a asp-action="Index">Назад к списку</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,68 @@
+﻿@model IEnumerable<AIS_Cinema.Models.Movie>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Фильмы</h1>
+
+<p>
+    <a asp-area="Admin" asp-controller="Movies" asp-action="Create">Добавить</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Duration)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductionYear)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReleaseDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PosterPath)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Duration)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductionYear)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReleaseDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PosterPath)
+            </td>
+            <td>
+                <a asp-area="Admin" asp-controller="Movies" asp-action="Edit" asp-route-id="@item.Id">Изменить</a> |
+                <a asp-area="Admin" asp-controller="Movies" asp-action="Details" asp-route-id="@item.Id">Подробнее</a> |
+                <a asp-area="Admin" asp-controller="Movies" asp-action="BindGenres" asp-route-id="@item.Id">Жанры</a> |
+                <a asp-area="Admin" asp-controller="Movies" asp-action="BindCountries" asp-route-id="@item.Id">Страны</a> |
+                <a asp-area="Admin" asp-controller="Movies" asp-action="Delete" asp-route-id="@item.Id">Удалить</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

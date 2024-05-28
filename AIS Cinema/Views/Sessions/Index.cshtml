@@ -1,0 +1,45 @@
+﻿@model AIS_Cinema.ViewModels.SessionsWithDates
+@{
+    ViewData["Title"] = "Сеансы";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="mb-4">Список сеансов</h2>
+
+<ul class="nav nav-pills">
+    @foreach (var tab in Model.DateTabs)
+    {
+        string activeOrDisabled = "";
+
+        if (tab.State == AIS_Cinema.ViewModels.SessionDateTab.TabState.Selected)
+        {
+            activeOrDisabled = "active";
+        }
+        else if (tab.State == AIS_Cinema.ViewModels.SessionDateTab.TabState.Disabled)
+        {
+            activeOrDisabled = "disabled";
+        }
+
+        <li class="nav-item">
+            <a class="nav-link @activeOrDisabled" asp-action="Index" asp-route-date="@tab.DateStr">@tab.Text</a>
+        </li>
+    }
+</ul>
+
+<div class="row">
+    @foreach (var card in Model.SessionCards)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">@card.MovieName</h5>
+                    <p class="card-text">@card.DateTimeStr</p>
+                    <p class="card-text">@string.Join(", ", card.MovieGenreNames)</p>
+                    <p class="card-text">@card.Price ₽</p>
+                    <p class="card-text">Свободных мест: @card.NumberAvailableSeats</p>
+                    <a asp-controller="Orders" asp-action="SelectSeats" asp-route-id="@card.SessionId" class="btn btn-primary">Купить билет</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
