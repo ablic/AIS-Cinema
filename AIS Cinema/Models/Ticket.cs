@@ -32,6 +32,6 @@ namespace AIS_Cinema.Models
         public string? OwnerEmail { get; set; }
 
         [NotMapped]
-        public bool IsBought => false;
+        public bool IsBought => OwnerEmail != null;
     }
 }
