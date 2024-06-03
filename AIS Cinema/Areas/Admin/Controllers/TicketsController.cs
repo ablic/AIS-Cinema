@@ -20,14 +20,12 @@ namespace AIS_Cinema.Areas.Admin.Controllers
             _context = context;
         }
 
-        // GET: Admin/Tickets
         public async Task<IActionResult> Index()
         {
-            var aISCinemaDbContext = _context.Tickets.Include(t => t.Session).Include(t => t.Visitor);
+            var aISCinemaDbContext = _context.Tickets.Include(t => t.Session);
             return View(await aISCinemaDbContext.ToListAsync());
         }
 
-        // GET: Admin/Tickets/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -37,8 +35,8 @@ namespace AIS_Cinema.Areas.Admin.Controllers
 
             var ticket = await _context.Tickets
                 .Include(t => t.Session)
-                .Include(t => t.Visitor)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (ticket == null)
             {
                 return NotFound();
@@ -47,7 +45,6 @@ namespace AIS_Cinema.Areas.Admin.Controllers
             return View(ticket);
         }
 
-        // GET: Admin/Tickets/Create
         public IActionResult Create()
         {
             ViewData["SessionId"] = new SelectList(_context.Sessions, "Id", "Id");
@@ -55,12 +52,9 @@ namespace AIS_Cinema.Areas.Admin.Controllers
             return View();
         }
 
-        // POST: Admin/Tickets/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,SessionId,RowNumber,SeatNumber,Price,VisitorId,OwnerEmail")] Ticket ticket)
+        public async Task<IActionResult> Create([Bind("Id,SessionId,RowNumber,SeatNumber,Price,OwnerEmail")] Ticket ticket)
         {
             if (ModelState.IsValid)
             {
@@ -68,12 +62,11 @@ namespace AIS_Cinema.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["SessionId"] = new SelectList(_context.Sessions, "Id", "Id", ticket.SessionId);
-            ViewData["VisitorId"] = new SelectList(_context.Users, "Id", "Id", ticket.VisitorId);
             return View(ticket);
         }
 
-        // GET: Admin/Tickets/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -86,17 +79,14 @@ namespace AIS_Cinema.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
             ViewData["SessionId"] = new SelectList(_context.Sessions, "Id", "Id", ticket.SessionId);
-            ViewData["VisitorId"] = new SelectList(_context.Users, "Id", "Id", ticket.VisitorId);
             return View(ticket);
         }
 
-        // POST: Admin/Tickets/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,SessionId,RowNumber,SeatNumber,Price,VisitorId,OwnerEmail")] Ticket ticket)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,SessionId,RowNumber,SeatNumber,Price,OwnerEmail")] Ticket ticket)
         {
             if (id != ticket.Id)
             {
@@ -123,8 +113,8 @@ namespace AIS_Cinema.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["SessionId"] = new SelectList(_context.Sessions, "Id", "Id", ticket.SessionId);
-            ViewData["VisitorId"] = new SelectList(_context.Users, "Id", "Id", ticket.VisitorId);
             return View(ticket);
         }
 
@@ -138,8 +128,8 @@ namespace AIS_Cinema.Areas.Admin.Controllers
 
             var ticket = await _context.Tickets
                 .Include(t => t.Session)
-                .Include(t => t.Visitor)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (ticket == null)
             {
                 return NotFound();

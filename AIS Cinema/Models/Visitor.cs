@@ -4,6 +4,6 @@ namespace AIS_Cinema.Models
 {
     public class Visitor : IdentityUser
     {
-        public List<Ticket> Tickets { get; set; } = new();
+        public long? TelegramChatId { get; set; }
     }
 }

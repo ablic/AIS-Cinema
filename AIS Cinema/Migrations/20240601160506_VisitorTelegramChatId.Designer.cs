@@ -4,6 +4,7 @@ using AIS_Cinema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AIS_Cinema.Migrations
 {
     [DbContext(typeof(AISCinemaDbContext))]
-    partial class AISCinemaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240601160506_VisitorTelegramChatId")]
+    partial class VisitorTelegramChatId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

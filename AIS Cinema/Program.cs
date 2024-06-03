@@ -23,6 +23,7 @@ builder.Services
 
 builder.Services.AddTransient<ImageWorker>();
 builder.Services.AddTransient<TicketEmailSender>();
+builder.Services.AddHostedService<SessionCleanupService>();
 
 var app = builder.Build();
 

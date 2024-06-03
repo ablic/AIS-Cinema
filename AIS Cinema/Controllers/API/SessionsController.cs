@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using API_Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using API_Models;
 
 namespace AIS_Cinema.Controllers.API
 {
     [ApiController]
-    public class ApiController : ControllerBase
+    public class SessionsController : ControllerBase
     {
         private readonly AISCinemaDbContext _context;
 
-        public ApiController(AISCinemaDbContext context)
+        public SessionsController(AISCinemaDbContext context)
         {
             _context = context;
         }
@@ -28,13 +28,6 @@ namespace AIS_Cinema.Controllers.API
                 .ToListAsync();
 
             return Ok(sessions);
-        }
-
-        [HttpGet]
-        [Route("api/hi")]
-        public async Task<ActionResult<string>> Hi()
-        {
-            return Ok("hi");
         }
     }
 }

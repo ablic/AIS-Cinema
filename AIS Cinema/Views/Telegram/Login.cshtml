@@ -1,0 +1,24 @@
+﻿@model AIS_Cinema.Models.TelegramLoginModel
+
+<div class="row">
+    <div class="col-md-4">
+        <section>
+            <form asp-action="Login" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <label asp-for="Email" class="form-label">Email</label>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                    <label asp-for="Password" class="form-label">Password</label>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Подтвердить" class="btn btn-primary" />
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
