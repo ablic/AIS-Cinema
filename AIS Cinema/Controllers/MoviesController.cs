@@ -20,7 +20,6 @@ namespace AIS_Cinema.Controllers
             _context = context;
         }
 
-        // GET: Movies
         public async Task<IActionResult> Index()
         {
             List<MovieCard> cards = await _context.Movies
@@ -30,7 +29,6 @@ namespace AIS_Cinema.Controllers
             return View(cards);
         }
 
-        // GET: Movies/Details/5
         public async Task<IActionResult> Details(int? id, [FromQuery] DateTime? date)
         {
             if (id == null)
@@ -50,10 +48,7 @@ namespace AIS_Cinema.Controllers
                 return NotFound();
             }
 
-            if (!date.HasValue)
-            {
-                return RedirectToAction(nameof(Details), new { id, date = DateTime.Today });
-            }
+            date ??= DateTime.Today;
 
             var sessionCards = await _context.Sessions
                 .Where(s => s.MovieId == id && s.DateTime.Date == date)
@@ -62,13 +57,15 @@ namespace AIS_Cinema.Controllers
                     SessionId = s.Id,
                     TimeStr = s.DateTime.ToString("HH:mm"),
                     NumberAvailableSeats = s.Tickets.Count,
-                    Price = s.MinPrice
+                    Price = s.MinPrice,
+                    HallNumber = s.HallId,
                 })
                 .ToListAsync();
 
             return View(new MovieDetails
             {
                 Movie = movie,
+                DateTabs = DateTimeUtility.BuildSessionDateTabs((DateTime)date),
                 SessionCards = sessionCards
             });
         }

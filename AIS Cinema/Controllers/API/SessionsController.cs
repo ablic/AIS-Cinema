@@ -1,4 +1,4 @@
-﻿using API_Models;
+﻿using AIS_Cinema.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,11 +20,6 @@ namespace AIS_Cinema.Controllers.API
         {
             var sessions = await _context.Sessions
                 .Include(s => s.Movie)
-                .Select(s => new Session
-                {
-                    DateTime = s.DateTime,
-                    MovieName = s.Movie.Name
-                })
                 .ToListAsync();
 
             return Ok(sessions);

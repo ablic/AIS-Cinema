@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace AIS_Cinema.Models
 {
@@ -31,6 +32,7 @@ namespace AIS_Cinema.Models
         public List<Genre> Genres { get; set; } = new();
         public List<Country> Countries { get; set; } = new();
 
+        [JsonIgnore]
         public List<Session> Sessions { get; set; } = new();
     }
 }

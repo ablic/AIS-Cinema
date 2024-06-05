@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\API Models\API Models.csproj" />
+    <ProjectReference Include="..\AIS Cinema\AIS Cinema.csproj" />
   </ItemGroup>
 
 </Project>

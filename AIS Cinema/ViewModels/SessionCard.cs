@@ -8,5 +8,6 @@
         public List<string> MovieGenreNames { get; set; } = new();
         public decimal Price { get; set; }
         public int NumberAvailableSeats { get; set; }
+        public int HallNumber { get; set; }
     }
 }

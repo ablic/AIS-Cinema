@@ -1,16 +1,12 @@
-﻿using AIS_Cinema.Models;
-using AIS_Cinema.Models.HallLayout;
-using AIS_Cinema.ViewModels;
-using Microsoft.AspNetCore.Identity;
+﻿using AIS_Cinema.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace AIS_Cinema.Controllers
 {
     public class SessionsController : Controller
     {
-        private const int NumberAvailableSessionDays = 5;
+        public const int NumberAvailableSessionDays = 7;
         private readonly AISCinemaDbContext _context;
 
         public SessionsController(AISCinemaDbContext context)
@@ -26,30 +22,6 @@ namespace AIS_Cinema.Controllers
                 return RedirectToAction(nameof(Index), new { date = DateTime.Today.ToString("yyyy-MM-dd") });
             }
 
-            List<SessionDateTab> tabs = new List<SessionDateTab>(NumberAvailableSessionDays);
-
-            for (int i = 0; i < NumberAvailableSessionDays; i++)
-            {
-                SessionDateTab tab = new SessionDateTab();
-                tab.Date = DateTime.Today.AddDays(i);
-                tab.Text = tab.DateStr;
-                
-                if (tab.Date == date)
-                {
-                    tab.State = SessionDateTab.TabState.Selected;
-                }
-                else if (await _context.Sessions.Where(s => s.DateTime.Date == tab.Date).CountAsync() == 0)
-                {
-                    tab.State = SessionDateTab.TabState.Disabled;
-                }
-                else
-                {
-                    tab.State = SessionDateTab.TabState.NotSelected;
-                }
-
-                tabs.Add(tab);
-            }
-
             List<SessionCard> cards = await _context.Sessions
                 .Where(s => s.DateTime.Date == date)
                 .Include(s => s.Movie)
@@ -61,13 +33,14 @@ namespace AIS_Cinema.Controllers
                     DateTimeStr = s.DateTime.ToString("HH:mm"),
                     MovieGenreNames = s.Movie.Genres.Select(g => g.Name).ToList(),
                     Price = s.MinPrice,
-                    NumberAvailableSeats = s.Tickets.Count
+                    NumberAvailableSeats = s.Tickets.Where(t => t.OwnerEmail == null).Count(),
+                    HallNumber = s.HallId,
                 })
                 .ToListAsync();
 
             return View(new SessionsWithDates
             {
-                DateTabs = tabs,
+                DateTabs = DateTimeUtility.BuildSessionDateTabs((DateTime)date),
                 SessionCards = cards
             });
         }

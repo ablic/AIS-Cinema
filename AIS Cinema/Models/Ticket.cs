@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace AIS_Cinema.Models
 {
@@ -20,6 +22,8 @@ namespace AIS_Cinema.Models
 
 
         [Display(Name = "Цена")]
+        [Precision(18, 2)]
+        [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = true)]
         public decimal Price { get; set; }
 
         [DataType(DataType.EmailAddress)]
@@ -27,6 +31,7 @@ namespace AIS_Cinema.Models
         public string? OwnerEmail { get; set; }
 
         [NotMapped]
+        [JsonIgnore]
         public bool IsBought => OwnerEmail != null;
     }
 }

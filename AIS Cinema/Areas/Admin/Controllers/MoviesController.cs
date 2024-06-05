@@ -81,7 +81,7 @@ namespace AIS_Cinema.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Duration,ProductionYear,ReleaseDate,Description,PosterPath")] Movie movie, IFormFile posterFile)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Duration,ProductionYear,AgeLimitId,ReleaseDate,Description,PosterPath")] Movie movie, IFormFile posterFile)
         {
             if (id != movie.Id)
             {

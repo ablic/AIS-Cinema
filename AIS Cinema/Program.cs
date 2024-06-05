@@ -1,7 +1,10 @@
 using AIS_Cinema;
 using AIS_Cinema.Models;
 using AIS_Cinema.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,11 +17,15 @@ builder.Services.AddDbContext<AISCinemaDbContext>(options =>
 builder.Services
     .AddDefaultIdentity<Visitor>(options =>
     {
+        options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZабвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
         options.SignIn.RequireConfirmedAccount = false;
         options.Password.RequireDigit = false;
         options.Password.RequireNonAlphanumeric = false;
         options.Password.RequiredLength = 4;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireLowercase = false;
     })
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AISCinemaDbContext>();
 
 builder.Services.AddTransient<ImageWorker>();
@@ -26,6 +33,21 @@ builder.Services.AddTransient<TicketEmailSender>();
 builder.Services.AddHostedService<SessionCleanupService>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var userManager = services.GetRequiredService<UserManager<Visitor>>();
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        await DataInitializer.Initialize(services, userManager, roleManager);
+    }
+    catch (Exception ex)
+    {
+        throw;
+    }
+}
 
 if (!app.Environment.IsDevelopment())
 {
@@ -52,3 +74,4 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 app.Run();
+

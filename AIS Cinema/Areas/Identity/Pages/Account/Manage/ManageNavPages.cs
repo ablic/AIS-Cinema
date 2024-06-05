@@ -17,6 +17,7 @@ namespace  AIS_Cinema.Areas.Identity.Pages.Account.Manage
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
+        public static string Tickets => "Tickets";
         public static string Index => "Index";
 
         /// <summary>
@@ -65,6 +66,7 @@ namespace  AIS_Cinema.Areas.Identity.Pages.Account.Manage
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
+        public static string TicketsNavClass(ViewContext viewContext) => PageNavClass(viewContext, Tickets);
         public static string IndexNavClass(ViewContext viewContext) => PageNavClass(viewContext, Index);
 
         /// <summary>

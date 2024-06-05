@@ -113,7 +113,7 @@ namespace AIS_Cinema.Controllers
 
             return View(new OrderConfirmation
             {
-                DateTimeStr = DateTimeFormatter.FormatDateTime((DateTime)TempData["OrderDateTime"]),
+                DateTimeStr = DateTimeUtility.FormatDateTime((DateTime)TempData["OrderDateTime"]),
                 MovieName = TempData["OrderMovieName"].ToString(),
                 Seats = tickets.Select(t => TicketFormatter.FormatTicket(t)).ToList(),
                 Email = TempData["OrderEmail"].ToString(),

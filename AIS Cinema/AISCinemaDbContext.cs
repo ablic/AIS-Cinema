@@ -19,6 +19,7 @@ namespace AIS_Cinema
 
         public AISCinemaDbContext(DbContextOptions options) : base(options)
         {
+
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

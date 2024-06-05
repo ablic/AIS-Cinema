@@ -6,86 +6,139 @@
 
 <ul class="nav nav-tabs mb-3">
     <li class="nav-item">
-        <span class="nav-link actie">Выбор мест</span>
+        <span class="nav-link active">Выбор мест</span>
     </li>
     <li class="nav-item">
-        <span class="nav-link disabled">Отправка билетов</span>
+        <span class="nav-link disabled">Ввод почты</span>
     </li>
     <li class="nav-item">
-        <span class="nav-link disabled">Подтверждение покупки</span>
+        <span class="nav-link disabled">Проверка данных</span>
+    </li>
+    <li class="nav-item">
+        <span class="nav-link disabled">Оплата</span>
+    </li>
+    <li class="nav-item">
+        <span class="nav-link disabled">Подтверждение</span>
     </li>
 </ul>
 
 <form asp-action="SelectSeats">
 
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-    <div class="d-grid gap-2">
-
+    <div class="container">
         @for (int i = 0; i < Model.Rows.Count; i++)
         {
-            <div class="d-flex justify-content-between">
+            <div class="row align-items-center mb-2">
                 @{
                     int rowNumber = i + 1;
                 }
-                @rowNumber
-                <div class="d-flex justify-content-center gap-2">
-
-                    @for (int j = 0; j < Model.Rows[i].Seats.Count; j++)
-                    {
-                        var seat = Model.Rows[i].Seats[j];
-                        int seatNumber = j + 1;
-
-                        if (seat.LeftGap > 0f)
-                        {
-                            <div style="width: @(seat.LeftGap * 25)px"></div>
-                        }
-
-                        <span class="d-inline-block"
-                              tabindex="0"
-                              data-bs-toggle="tooltip"
-                              title="@(
-                                    $"Ряд: {rowNumber}, Место: {seatNumber}\n" +
-                                    $"Цена: {seat.Price} руб.")">
-
-                            @if (seat.IsTaken)
-                            {
-                                @* <input type="hidden" asp-for="@Model[i][j].IsSelected" /> *@
-                                <button type="button" class="btn btn-sm btn-danger disabled">
-                                    @seatNumber
-                                </button>
-                            }
-                            else
-                            {
-                                <input type="checkbox"
-                                        name="selectedTicketIds"
-                                        value="@seat.TicketId"
-                                        @* asp-for="@Model[i][j].IsSelected" *@
-                                        class="btn-check seat"
-                                        id="btn-check-@(rowNumber + "-" + seatNumber)"
-                                        autocomplete="off"
-                                        data-price="@seat.Price">
-
-                                <label for="btn-check-@(rowNumber + "-" + seatNumber)"
-                                       class="btn btn-outline-success btn-sm">
-                                    @seatNumber
-                                </label>
-                            }
-                        </span>
-
-                        if (seat.RightGap > 0f)
-                        {
-                            <div style="width: @(seat.RightGap * 25)px"></div>
-                        }
-                    }
+                <div class="col-auto pe-1">
+                    <span class="row-number">@rowNumber</span>
                 </div>
-                @rowNumber
+                <div class="col">
+                    <div class="d-flex justify-content-center gap-1">
+                        @for (int j = 0; j < Model.Rows[i].Seats.Count; j++)
+                        {
+                            var seat = Model.Rows[i].Seats[j];
+                            int seatNumber = j + 1;
+
+                            if (seat.LeftGap > 0f)
+                            {
+                                <div style="width: @(seat.LeftGap * 25)px"></div>
+                            }
+
+                            <span class="d-inline-block position-relative"
+                                  tabindex="0"
+                                  data-bs-toggle="tooltip"
+                                  title="@($"Ряд: {rowNumber}, Место: {seatNumber}\nЦена: {seat.Price} руб.")">
+                                @if (seat.IsTaken)
+                                {
+                                    <button type="button" class="btn btn-sm btn-danger disabled">
+                                        @seatNumber
+                                    </button>
+                                }
+                                else
+                                {
+                                    <input type="checkbox"
+                                           name="selectedTicketIds"
+                                           value="@seat.TicketId"
+                                           class="btn-check seat"
+                                           id="btn-check-@(rowNumber + "-" + seatNumber)"
+                                           autocomplete="off"
+                                           data-price="@seat.Price">
+
+                                    <label for="btn-check-@(rowNumber + "-" + seatNumber)"
+                                           class="btn btn-outline-success btn-sm">
+                                        @seatNumber
+                                    </label>
+                                }
+                            </span>
+
+                            if (seat.RightGap > 0f)
+                            {
+                                <div style="width: @(seat.RightGap * 25)px"></div>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="col-auto ps-1">
+                    <span class="row-number">@rowNumber</span>
+                </div>
             </div>
         }
     </div>
 
-    <div class="d-flex justify-content-between">
-        <a asp-controller="Sessions" asp-action="Index">Назад к сеансам</a>
-        <input type="submit" value="Продолжить" class="btn btn-primary" />
+    <div class="container mt-3">
+        <div class="row justify-content-between align-items-center">
+            <div class="col-auto">
+                <a asp-controller="Sessions" asp-action="Index" class="btn btn-secondary">Назад к сеансам</a>
+            </div>
+            <div class="col-auto">
+                <div>
+                    <strong>Общая стоимость: </strong><span id="totalPrice">0</span> руб.
+                </div>
+            </div>
+            <div class="col-auto">
+                <input type="submit" value="Продолжить" class="btn btn-primary disabled" id="continueButton" disabled />
+            </div>
+        </div>
     </div>
 </form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const seatCheckboxes = document.querySelectorAll('.seat');
+        const totalPriceElement = document.getElementById('totalPrice');
+        const continueButton = document.getElementById('continueButton');
+
+        function updateTotalPrice() {
+            let totalPrice = 0;
+            let hasCheckedSeat = false;
+
+            seatCheckboxes.forEach(function (checkbox) {
+                if (checkbox.checked) {
+                    totalPrice += parseFloat(checkbox.getAttribute('data-price'));
+                    hasCheckedSeat = true;
+                }
+            });
+
+            totalPriceElement.textContent = totalPrice.toFixed(2);
+
+            // Enable or disable the continue button
+            continueButton.disabled = !hasCheckedSeat;
+            if (hasCheckedSeat) {
+                continueButton.classList.remove('disabled');
+            } else {
+                continueButton.classList.add('disabled');
+            }
+        }
+
+        seatCheckboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('change', updateTotalPrice);
+        });
+
+        // Инициализация общей стоимости и состояния кнопки при загрузке страницы
+        updateTotalPrice();
+    });
+</script>

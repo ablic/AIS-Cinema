@@ -7,11 +7,12 @@
 
 <div class="row">
     <div class="col-md-4">
-        <img src="@("~/" + ImageWorker.FolderName + "/" + Model.Movie.PosterPath)" class="img-fluid" alt="@Model.Movie.Name">
+        <img src="@("~/" + ImageWorker.FolderName + "/" + Model.Movie.PosterPath)" asp-append-version="true" class="img-fluid" alt="@Model.Movie.Name">
     </div>
     <div class="col-md-8">
-        <h1>@Model.Movie.Name <span class="badge bg-success">@Model.Movie.AgeLimit?.Value</span></h1>
+        <h1>@Model.Movie.Name <span class="badge fs-5 bg-danger">@Model.Movie.AgeLimit?.Value</span></h1>
         <h3>@Model.Movie.ProductionYear</h3>
+        <hr/>
         <p><strong>Жанр:</strong> @string.Join(", ", Model.Movie.Genres.Select(g => g.Name))</p>
         <p><strong>Страны:</strong> @string.Join(", ", Model.Movie.Countries.Select(c => c.ShortName))</p>
         <p><strong>Продолжительность:</strong> @Model.Movie.Duration мин.</p>
@@ -20,22 +21,69 @@
     </div>
 </div>
 
-<hr/>
+<hr id="sessions-section" />
 
-<h2 class="mb-4">Список сеансов</h2>
-<div class="row">
-    @foreach (var card in Model.SessionCards)
+<h2 class="mb-3">Список сеансов</h2>
+
+<ul class="nav nav-pills mb-3">
+    @foreach (var tab in Model.DateTabs)
     {
-        <div class="col-md-2 mb-4">
-            <a href="#" class="card text-reset text-decoration-none">
-                <div class="card-header text-center">
-                    <h5 class="card-title">@card.TimeStr</h5>
-                </div>
-                <div class="card-body text-center">
-                    <p class="card-text">Места: @card.NumberAvailableSeats</p>
-                    <button class="btn btn-primary btn-block">@card.Price ₽</button>
-                </div>
-            </a>
+        string activeClass = tab.IsSelected ? "active" : string.Empty;
+
+        <li class="nav-item">
+            <a class="nav-link @activeClass" asp-action="Details" asp-route-id="@Model.Movie.Id" asp-route-date="@tab.DateStr">@tab.Text</a>
+        </li>
+    }
+</ul>
+
+<div class="row">
+    @if (Model.SessionCards.Count > 0)
+    {
+        foreach (var card in Model.SessionCards)
+        {
+            <div class="col-md-2 mb-4">
+                <a asp-controller="Orders" asp-action="SelectSeats" asp-route-id="@card.SessionId" class="card text-reset text-decoration-none">
+                    <div class="card-header text-center">
+                        <h5 class="card-title fs-4">@card.TimeStr</h5> <!-- Время немного крупнее -->
+                    </div>
+                    <div class="card-body text-center">
+                        <p class="card-text fs-6 fw-bold">@card.Price ₽</p> <!-- Цена немного меньше -->
+                        <div class="d-flex justify-content-center fs-6">
+                            <span>Места: @card.NumberAvailableSeats</span>
+                            <span class="mx-2">•</span>
+                            <span>Зал @card.HallNumber</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-warning text-center" role="alert">
+            <h4 class="alert-heading">Извините!</h4>
+            <p>На текущую дату сеансов на этот фильм нет.</p>
+            <hr>
+            <p class="mb-0">Пожалуйста, проверьте расписание на другие даты.</p>
         </div>
     }
 </div>
+
+<script>
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            localStorage.setItem('scrollToSessions', 'true');
+        });
+    });
+
+    window.addEventListener('load', () => {
+        const scrollToSessions = localStorage.getItem('scrollToSessions');
+        if (scrollToSessions === 'true') {
+            const element = document.getElementById('sessions-section');
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+            localStorage.removeItem('scrollToSessions');
+        }
+    });
+</script>

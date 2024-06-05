@@ -4,42 +4,62 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2 class="mb-4">Список сеансов</h2>
+<h2 class="mb-3">Список сеансов</h2>
 
-<ul class="nav nav-pills">
+<ul class="nav nav-pills mb-3">
     @foreach (var tab in Model.DateTabs)
     {
-        string activeOrDisabled = "";
-
-        if (tab.State == AIS_Cinema.ViewModels.SessionDateTab.TabState.Selected)
-        {
-            activeOrDisabled = "active";
-        }
-        else if (tab.State == AIS_Cinema.ViewModels.SessionDateTab.TabState.Disabled)
-        {
-            activeOrDisabled = "disabled";
-        }
+        string activeClass = tab.IsSelected ? "active" : string.Empty;
 
         <li class="nav-item">
-            <a class="nav-link @activeOrDisabled" asp-action="Index" asp-route-date="@tab.DateStr">@tab.Text</a>
+            <a class="nav-link @activeClass" asp-action="Index" asp-route-date="@tab.DateStr">@tab.Text</a>
         </li>
     }
 </ul>
 
 <div class="row">
-    @foreach (var card in Model.SessionCards)
+    @if (Model.SessionCards.Count > 0)
     {
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">@card.MovieName</h5>
-                    <p class="card-text">@card.DateTimeStr</p>
-                    <p class="card-text">@string.Join(", ", card.MovieGenreNames)</p>
-                    <p class="card-text">@card.Price ₽</p>
-                    <p class="card-text">Свободных мест: @card.NumberAvailableSeats</p>
-                    <a asp-controller="Orders" asp-action="SelectSeats" asp-route-id="@card.SessionId" class="btn btn-primary">Купить билет</a>
-                </div>
+        foreach (var card in Model.SessionCards)
+        {
+            <div class="col-md-4 mb-4">
+                <a asp-controller="Orders" asp-action="SelectSeats" asp-route-id="@card.SessionId" class="text-decoration-none text-dark">
+                    <div class="card h-100 text-center">
+                        <div class="card-header bg-light text-dark">
+                            <strong class="fs-1">@card.DateTimeStr</strong> <!-- Очень большой текст для времени -->
+                        </div>
+                        <div class="card-body d-flex flex-column justify-content-center">
+                            <h4 class="card-title fs-3">@card.MovieName</h4> <!-- Средний текст для названия фильма -->
+                            <p class="card-text fs-4 fw-bold">@card.Price ₽</p> <!-- Немного меньше среднего текста для цены -->
+                            <div class="d-flex justify-content-center align-items-center mt-2 fs-5">
+                                <span>Мест: @card.NumberAvailableSeats</span>
+                                <span class="mx-2">•</span>
+                                <span>Зал @card.HallNumber</span>
+                            </div>
+                            <div class="d-flex flex-wrap justify-content-center gap-1 mt-2">
+                                @foreach (var genreName in card.MovieGenreNames)
+                                {
+                                    <div class="d-inline-block bg-secondary text-white p-2 rounded">
+                                        @genreName
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </a>
             </div>
+
+
+
+        }
+    }
+    else
+    {
+        <div class="alert alert-warning text-center" role="alert">
+            <h4 class="alert-heading">Извините!</h4>
+            <p>На текущую дату сеансов нет.</p>
+            <hr>
+            <p class="mb-0">Пожалуйста, проверьте расписание на другие даты.</p>
         </div>
     }
 </div>

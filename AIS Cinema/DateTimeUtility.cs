@@ -1,8 +1,45 @@
-﻿namespace AIS_Cinema
+﻿using AIS_Cinema.ViewModels;
+
+namespace AIS_Cinema
 {
-    public static class DateTimeFormatter
+    public static class DateTimeUtility
     {
-        public static string FormatDateTime(DateTime dateTime)
+        private const int NumberAvailableSessionDays = 7;
+
+        public static List<SessionDateTab> BuildSessionDateTabs(DateTime date)
+        {
+            List<SessionDateTab> tabs = new List<SessionDateTab>(NumberAvailableSessionDays);
+
+            for (int i = 0; i < NumberAvailableSessionDays; i++)
+            {
+                SessionDateTab tab = new SessionDateTab();
+                tab.Date = DateTime.Today.AddDays(i);
+                tab.Text = tab.Date.FormatDateWithTodayTomorrow();
+                tab.IsSelected = tab.Date == date;
+                tabs.Add(tab);
+            }
+
+            return tabs;
+        }
+
+        public static string FormatDateWithTodayTomorrow(this DateTime date)
+        {
+            if (date.Date == DateTime.Now.Date)
+            {
+                return "Сегодня";
+            }
+            if (date.Date == DateTime.Now.AddDays(1).Date)
+            {
+                return "Завтра";
+            }
+
+            string dayOfMonth = GetDayOfMonth(date);
+            string month = GetMonth(date);
+
+            return $"{dayOfMonth} {month}";
+        }
+
+        public static string FormatDateTime(this DateTime dateTime)
         {
             string dayOfMonth = GetDayOfMonth(dateTime);
             string month = GetMonth(dateTime);

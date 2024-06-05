@@ -35,8 +35,4 @@
     <Folder Include="wwwroot\posters\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\API Models\API Models.csproj" />
-  </ItemGroup>
-
 </Project>
