@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AIS_Cinema.Controllers.API
 {
     [ApiController]
+    [Route("api/[controller]")]
     public class SessionsController : ControllerBase
     {
         private readonly AISCinemaDbContext _context;
@@ -14,11 +15,11 @@ namespace AIS_Cinema.Controllers.API
             _context = context;
         }
 
-        [HttpGet]
-        [Route("api/sessions")]
-        public async Task<ActionResult<IEnumerable<Session>>> GetSessions()
+        [HttpGet("{date}")]
+        public async Task<ActionResult<IEnumerable<Session>>> GetSessions(DateTime date)
         {
             var sessions = await _context.Sessions
+                .Where(s => s.DateTime.Date == date)
                 .Include(s => s.Movie)
                 .ToListAsync();
 

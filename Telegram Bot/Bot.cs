@@ -1,17 +1,13 @@
 ﻿using AIS_Cinema;
 using AIS_Cinema.Models;
-using Microsoft.AspNetCore.Identity;
-using Newtonsoft.Json;
-using QRCoder;
 using System.Net.Http.Json;
-using System.Threading;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 using Update = Telegram.Bot.Types.Update;
 
 namespace Telegram_Bot
@@ -19,6 +15,7 @@ namespace Telegram_Bot
     internal class Bot
     {
         private const string StartCommand = "/start";
+        private const string SessionsCommand = "/sessions";
         private const string TicketsCommand = "/tickets";
         private const int TicketMessageLifetime = 1;
 
@@ -79,6 +76,7 @@ namespace Telegram_Bot
             switch (message.Text)
             {
                 case StartCommand: await HandleStartCommandAsync(chatId, cancellationToken); break;
+                case SessionsCommand: await HandleSessionsCommandAsync(chatId, cancellationToken); break;
                 case TicketsCommand: await HandleTicketsCommandAsync(chatId, cancellationToken); break;
                 default: 
                     await _botClient.SendTextMessageAsync(
@@ -95,6 +93,7 @@ namespace Telegram_Bot
                 new KeyboardButton[]
                 {
                     TicketsCommand,
+                    SessionsCommand,
                 }
             })
             {
@@ -109,9 +108,32 @@ namespace Telegram_Bot
             );
         }
 
+        public async Task HandleSessionsCommandAsync(long chatId, CancellationToken cancellationToken)
+        {
+            InlineKeyboardButton[][] sessionDateButtons = new InlineKeyboardButton[7][];
+
+            for (int i = 0; i < sessionDateButtons.Length; i++)
+            {
+                sessionDateButtons[i] = new InlineKeyboardButton[1];
+
+                DateTime date = DateTime.Today.AddDays(i);
+                sessionDateButtons[i][0] = InlineKeyboardButton.WithCallbackData(
+                    date.FormatDateWithTodayTomorrow(),
+                    SessionsCommand + date.ToString());
+            }
+
+            var inlineKeyboard = new InlineKeyboardMarkup(sessionDateButtons);
+
+            await _botClient.SendTextMessageAsync(
+                chatId,
+                "Выберите дату:",
+                replyMarkup: inlineKeyboard,
+                cancellationToken: cancellationToken);
+        }
+
         private async Task HandleTicketsCommandAsync(long chatId, CancellationToken cancellationToken)
         {
-            var isAuthenticated = await _httpClient.GetFromJsonAsync<bool>($"api/telegramAuth/isAuthenticated/{chatId}");
+            var isAuthenticated = await _httpClient.GetFromJsonAsync<bool>($"api/telegramauth/isAuthenticated/{chatId}");
 
             if (isAuthenticated)
             {
@@ -120,9 +142,9 @@ namespace Telegram_Bot
                 var inlineKeyboard = new InlineKeyboardMarkup(tickets.Select(ticket =>
                     new[]
                     {
-                            InlineKeyboardButton.WithCallbackData(
-                                $"{ticket.Session.Movie.Name} - {ticket.Session.DateTime:g}",
-                                ticket.Id.ToString())
+                        InlineKeyboardButton.WithCallbackData(
+                            $"{ticket.Session.Movie.Name} - {ticket.Session.DateTime:g}",
+                            TicketsCommand + ticket.Id.ToString())
                     }));
 
                 await _botClient.SendTextMessageAsync(
@@ -136,8 +158,8 @@ namespace Telegram_Bot
                 var authUrl = $"{Constants.MainUrl}/telegram/login/{chatId}";
                 var inlineKeyboard = new InlineKeyboardMarkup(new[]
                 {
-                        InlineKeyboardButton.WithUrl("Авторизоваться", authUrl)
-                    });
+                    InlineKeyboardButton.WithUrl("Авторизоваться", authUrl)
+                });
 
                 await _botClient.SendTextMessageAsync(
                     chatId,
@@ -149,7 +171,44 @@ namespace Telegram_Bot
         private async Task HandleCallbackQueryAsync(CallbackQuery callbackQuery, CancellationToken cancellationToken)
         {
             long chatId = callbackQuery.Message!.Chat.Id;
-            var ticket = await GetTicketByIdAsync(chatId, int.Parse(callbackQuery.Data));
+
+            if (callbackQuery.Data.StartsWith(SessionsCommand))
+            {
+                DateTime date = DateTime.Parse( callbackQuery.Data.Replace(SessionsCommand, string.Empty) );
+                await HandleSessionsCommandCallbackQueryAsync(chatId, date, cancellationToken);
+            }
+            else if (callbackQuery.Data.StartsWith(TicketsCommand))
+            {
+                int ticketId = int.Parse( callbackQuery.Data.Replace(TicketsCommand, string.Empty) );
+                await HandleTicketsCommandCallbackQueryAsync(chatId, ticketId, cancellationToken);
+            }
+        }
+
+        private async Task HandleSessionsCommandCallbackQueryAsync(long chatId, DateTime date, CancellationToken cancellationToken)
+        {
+            var sessions = await GetSessionsAsync(date);
+
+            if (sessions.Count() > 0)
+            {
+                foreach (var session in sessions)
+                {
+                    await _botClient.SendTextMessageAsync(
+                        chatId, 
+                        FormatSessionInfo(session),
+                        parseMode: ParseMode.MarkdownV2,
+                        disableWebPagePreview: true);
+                }
+            }
+            else
+            {
+                await _botClient.SendTextMessageAsync(chatId, "Нет сеансов в выбранную дату.");
+            }
+                
+        }
+
+        private async Task HandleTicketsCommandCallbackQueryAsync(long chatId, int ticketId, CancellationToken cancellationToken)
+        {
+            var ticket = await GetTicketByIdAsync(chatId, ticketId);
 
             if (ticket == null)
             {
@@ -161,9 +220,9 @@ namespace Telegram_Bot
             {
                 var inputOnlineFile = new InputFileStream(stream, "qr.jpg");
                 var message = await _botClient.SendPhotoAsync(
-                    callbackQuery.Message!.Chat.Id,
-                    inputOnlineFile, 
-                    caption: $"Билет на фильм {ticket.Session.Movie.Name}. Это сообщение будет удалено через {TicketMessageLifetime} мин.", 
+                    chatId,
+                    inputOnlineFile,
+                    caption: $"Билет на фильм {ticket.Session.Movie.Name}. Это сообщение будет удалено через {TicketMessageLifetime} мин.",
                     cancellationToken: cancellationToken);
 
                 var timer = new Timer(async state =>
@@ -193,11 +252,11 @@ namespace Telegram_Bot
             return Task.CompletedTask;
         }
 
-        private async Task<Session[]> GetSessionsAsync()
+        private async Task<IEnumerable<Session>> GetSessionsAsync(DateTime date)
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<Session[]>("api/sessions");
+                return await _httpClient.GetFromJsonAsync<IEnumerable<Session>>($"api/sessions/{date.ToString("yyyy-MM-dd")}");
             }
             catch (Exception ex)
             {
@@ -210,7 +269,8 @@ namespace Telegram_Bot
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<IEnumerable<Ticket>>($"api/tickets/{chatId}");
+                string userId = await GetUserIdByChatIdAsync(chatId);
+                return await _httpClient.GetFromJsonAsync<IEnumerable<Ticket>>($"api/tickets/{userId}");
             }
             catch (Exception ex)
             {
@@ -219,17 +279,43 @@ namespace Telegram_Bot
             }
         }
 
-        private async Task<Ticket> GetTicketByIdAsync(long chatId, int id)
+        private async Task<Ticket> GetTicketByIdAsync(long chatId, int ticketId)
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<Ticket>($"api/tickets/{chatId}/{id}");
+                string userId = await GetUserIdByChatIdAsync(chatId);
+                return await _httpClient.GetFromJsonAsync<Ticket>($"api/tickets/{userId}/{ticketId}");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
                 return null;
             }
+        }
+
+        private async Task<string> GetUserIdByChatIdAsync(long chatId)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/telegramAuth/getUserId/{chatId}");
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                return null;
+            }
+        }
+
+        private string FormatSessionInfo(Session session)
+        {
+            return $"*Сеанс фильма:*\n" +
+                      $"*Дата и время:* {session.DateTime:dd.MM.yyyy HH:mm}\n" +
+                      $"*Фильм:* {session.Movie.Name}\n" +
+                      $"*Стоимость билета:* {session.MinPrice} руб.\n" +
+                      $"*Номер зала:* {session.HallId}\n" +
+                      $"[Купить билет]({Constants.MainUrl}/orders/selectSeats/{session.Id})";
         }
     }
 }

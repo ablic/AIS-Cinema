@@ -9,20 +9,18 @@ namespace AIS_Cinema.Controllers.API
     [ApiController]
     public class TelegramAuthController : ControllerBase
     {
-        private readonly AISCinemaDbContext _context;
         private readonly UserManager<Visitor> _userManager;
 
-        public TelegramAuthController(AISCinemaDbContext context, UserManager<Visitor> userManager)
+        public TelegramAuthController(UserManager<Visitor> userManager)
         {
-            _context = context;
             _userManager = userManager;
         }
 
         [HttpGet("isAuthenticated/{chatId}")]
         public async Task<ActionResult<bool>> IsAuthenticated(long chatId)
         {
-            return Ok(await _context.Users
-                .FirstOrDefaultAsync(u => u.TelegramChatId == chatId) != null);
+            bool result = await _userManager.Users.AnyAsync(u => u.TelegramChatId == chatId);
+            return Ok(result);
         }
 
         [HttpGet("getUserId/{chatId}")]

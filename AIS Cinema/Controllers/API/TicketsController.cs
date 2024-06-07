@@ -19,12 +19,10 @@ namespace AIS_Cinema.Controllers.API
             _userManager = userManager;
         }
 
-        [HttpGet("{chatId}")]
-        public async Task<ActionResult<IEnumerable<Ticket>>> GetAll (long chatId)
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<IEnumerable<Ticket>>> GetAll (string userId)
         {
-            var user = await _userManager.Users
-                .FirstOrDefaultAsync(u => u.TelegramChatId == chatId);
-
+            var user = await _userManager.FindByIdAsync(userId);
             var tickets = await _context.Tickets
                 .Where(t => t.OwnerEmail == user.Email)
                 .Include(t => t.Session)
@@ -34,16 +32,14 @@ namespace AIS_Cinema.Controllers.API
             return Ok(tickets);
         }
 
-        [HttpGet("{chatId}/{id}")]
-        public async Task<ActionResult<Ticket>> GetById(long chatId, int id)
+        [HttpGet("{userId}/{ticketId}")]
+        public async Task<ActionResult<Ticket>> GetById(string userId, int ticketId)
         {
-            var user = await _userManager.Users
-                .FirstOrDefaultAsync(u => u.TelegramChatId == chatId);
-
+            var user = await _userManager.FindByIdAsync(userId);
             var ticket = await _context.Tickets
                 .Include(t => t.Session)
                 .ThenInclude(s => s.Movie)
-                .FirstOrDefaultAsync(t => t.Id == id);
+                .FirstOrDefaultAsync(t => t.Id == ticketId);
 
             return Ok(ticket);
         }
