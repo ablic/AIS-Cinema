@@ -12,13 +12,16 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<AISCinemaDbContext>(options => 
-    options.UseSqlServer(builder.Configuration.GetConnectionString("AISCinemaDebug")));
+    //options.UseSqlServer(builder.Configuration.GetConnectionString("AISCinemaDebug")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("AISCinema")));
 
 builder.Services
     .AddDefaultIdentity<Visitor>(options =>
     {
         options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZабвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
         options.SignIn.RequireConfirmedAccount = false;
+        options.SignIn.RequireConfirmedEmail = false;
+        options.SignIn.RequireConfirmedPhoneNumber = false;
         options.Password.RequireDigit = false;
         options.Password.RequireNonAlphanumeric = false;
         options.Password.RequiredLength = 4;
