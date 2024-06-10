@@ -1,6 +1,7 @@
 ﻿using AIS_Cinema;
 using AIS_Cinema.Models;
 using System.Net.Http.Json;
+using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
@@ -8,6 +9,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+using static System.Net.Mime.MediaTypeNames;
 using Update = Telegram.Bot.Types.Update;
 
 namespace Telegram_Bot
@@ -139,7 +141,9 @@ namespace Telegram_Bot
             {
                 var tickets = await GetTicketsAsync(chatId);
 
-                var inlineKeyboard = new InlineKeyboardMarkup(tickets.Select(ticket =>
+                if (tickets.Count() > 0)
+                {
+                    var inlineKeyboard = new InlineKeyboardMarkup(tickets.Select(ticket =>
                     new[]
                     {
                         InlineKeyboardButton.WithCallbackData(
@@ -147,15 +151,24 @@ namespace Telegram_Bot
                             TicketsCommand + ticket.Id.ToString())
                     }));
 
-                await _botClient.SendTextMessageAsync(
-                    chatId,
-                    "Ваши билеты:",
-                    replyMarkup: inlineKeyboard,
-                    cancellationToken: cancellationToken);
+                    await _botClient.SendTextMessageAsync(
+                        chatId,
+                        "Ваши билеты:",
+                        replyMarkup: inlineKeyboard,
+                        cancellationToken: cancellationToken);
+                }
+                else
+                {
+                    await _botClient.SendTextMessageAsync(
+                        chatId,
+                        "У вас нет приобретенных билетов.",
+                        cancellationToken: cancellationToken);
+                }
+                
             }
             else
             {
-                var authUrl = $"{Constants.MainUrl}/telegram/login/{chatId}";
+                var authUrl = $"{Constants.MainUrl}/telegramBinding/login/{chatId}";
                 var inlineKeyboard = new InlineKeyboardMarkup(new[]
                 {
                     InlineKeyboardButton.WithUrl("Авторизоваться", authUrl)
@@ -192,11 +205,16 @@ namespace Telegram_Bot
             {
                 foreach (var session in sessions)
                 {
+                    var inlineKeyboard = new InlineKeyboardMarkup(new[]
+                    {
+                        InlineKeyboardButton.WithUrl("Приобрести билеты", $"{Constants.MainUrl}/orders/selectSeats/{session.Id}"),
+                    });
+
                     await _botClient.SendTextMessageAsync(
-                        chatId, 
-                        FormatSessionInfo(session),
+                        chatId: chatId, 
+                        text: FormatSessionInfo(session),
                         parseMode: ParseMode.MarkdownV2,
-                        disableWebPagePreview: true);
+                        replyMarkup: inlineKeyboard);
                 }
             }
             else
@@ -310,12 +328,27 @@ namespace Telegram_Bot
 
         private string FormatSessionInfo(Session session)
         {
-            return $"*Сеанс фильма:*\n" +
-                      $"*Дата и время:* {session.DateTime:dd.MM.yyyy HH:mm}\n" +
-                      $"*Фильм:* {session.Movie.Name}\n" +
-                      $"*Стоимость билета:* {session.MinPrice} руб.\n" +
-                      $"*Номер зала:* {session.HallId}\n" +
-                      $"[Купить билет]({Constants.MainUrl}/orders/selectSeats/{session.Id})";
+            return $"*Дата и время:* {EscapeMarkdownV2(session.DateTime.ToString("dd.MM.yyyy HH:mm"))}\n" +
+                      $"*Название фильма:* {EscapeMarkdownV2(session.Movie.Name)}\n" +
+                      $"*Стоимость билета:* {session.MinPrice:F2} руб\n" +
+                      //$"*Количество доступных мест:* {}\n" +
+                      $"*Номер зала:* {session.HallId}";
+        }
+
+        private string EscapeMarkdownV2(string text)
+        {
+            var escapeChars = new[] { '_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!' };
+            var escapedText = new StringBuilder(text.Length);
+
+            foreach (var c in text)
+            {
+                if (escapeChars.Contains(c))
+                {
+                    escapedText.Append('\\');
+                }
+                escapedText.Append(c);
+            }
+            return escapedText.ToString();
         }
     }
 }

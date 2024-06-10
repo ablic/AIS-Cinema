@@ -46,13 +46,13 @@ namespace AIS_Cinema.Services
 
         private string GenerateEmailBody(Session session, List<Ticket> tickets)
         {
-            var body = $"<h1>Ваши билеты на фильм {session.Movie.Name}</h1>" +
+            var body = $"<h1>Ваши билеты на фильм \"{session.Movie.Name}\"</h1>" +
                        $"<p>Дата и время: {session.DateTime:dd MMMM yyyy HH:mm}</p>" +
                        "<ul>";
 
             foreach (var ticket in tickets)
             {
-                body += $"<li>Ряд {ticket.RowNumber}, Место {ticket.SeatNumber} " +
+                body += $"<li>Ряд {ticket.RowNumber}, Место {ticket.SeatNumber}\n" +
                         $"<img src=\"cid:qrCode_{ticket.RowNumber}_{ticket.SeatNumber}.png\" alt=\"QR Code\" /></li>";
             }
 

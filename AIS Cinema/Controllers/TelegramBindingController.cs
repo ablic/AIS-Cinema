@@ -17,7 +17,7 @@ namespace AIS_Cinema.Controllers
         }
 
         [HttpGet]
-        [Route("telegram/login/{chatId}")]
+        [Route("telegramBinding/login/{chatId}")]
         public async Task<IActionResult> Login(long chatId)
         {
             if (User.Identity.IsAuthenticated)
@@ -37,6 +37,7 @@ namespace AIS_Cinema.Controllers
         }
 
         [HttpPost]
+        [Route("telegramBinding/login/{chatId}")]
         public async Task<IActionResult> Login(TelegramLoginModel model)
         {
             var chatId = long.Parse(TempData["ChatId"].ToString());
