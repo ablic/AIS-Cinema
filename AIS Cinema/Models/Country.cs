@@ -11,5 +11,7 @@ namespace AIS_Cinema.Models
 
         [Display(Name = "Сокращенное название")]
         public string? ShortName { get; set; }
+
+        public List<Movie> Movies { get; set; } = new();
     }
 }

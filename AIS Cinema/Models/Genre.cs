@@ -8,5 +8,7 @@ namespace AIS_Cinema.Models
 
         [Display(Name = "Название")]
         public string Name { get; set; } = string.Empty;
+
+        public List<Movie> Movies { get; set; } = new ();
     }
 }

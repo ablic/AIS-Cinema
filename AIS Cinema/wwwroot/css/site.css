@@ -20,3 +20,34 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.movie-poster {
+    width: 100%;
+    height: 400px; /* Задайте желаемую высоту */
+    object-fit: cover;
+}
+
+/* Скрываем стандартный чекбокс */
+.seat-checkbox {
+    display: none;
+}
+
+/* Стили для кастомного чекбокса */
+.seat-label {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 2px solid #28a745;
+    border-radius: 5px;
+    text-align: center;
+    line-height: 26px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Стили для отмеченного чекбокса */
+.seat-checkbox:checked + .seat-label {
+    background-color: #28a745;
+    color: white;
+    border-color: #28a745;
+}

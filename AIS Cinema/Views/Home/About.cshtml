@@ -1,0 +1,27 @@
+﻿@model AIS_Cinema.ViewModels.CompanyInfo
+@{
+    ViewData["Title"] = "О нас";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="about-us">
+    <p>
+        <strong>Расположение:</strong> @Model.Location
+    </p>
+    <p>
+        <strong>Современное оборудование:</strong> @Model.Equipment
+    </p>
+    <p>
+        <strong>Комфорт и удобства:</strong> @Model.Comfort
+    </p>
+    <p>
+        <strong>Разнообразие репертуара:</strong> @Model.Repertoire
+    </p>
+    <p>
+        <strong>Дополнительные услуги:</strong> @Model.Services
+    </p>
+    <p>
+        <strong>Программы лояльности:</strong> @Model.LoyaltyProgram
+    </p>
+</div>

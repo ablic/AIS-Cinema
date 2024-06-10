@@ -3,17 +3,17 @@ using System;
 using AIS_Cinema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace AIS_Cinema.Migrations
 {
     [DbContext(typeof(AISCinemaDbContext))]
-    [Migration("20240603101949_PrecisionForPrices")]
-    partial class PrecisionForPrices
+    [Migration("20240610091429_MoreHalls")]
+    partial class MoreHalls
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,21 +21,21 @@ namespace AIS_Cinema.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.4")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("AIS_Cinema.Models.AgeLimit", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Value")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -73,23 +73,18 @@ namespace AIS_Cinema.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("MovieId")
-                        .HasColumnType("int");
+                        .HasColumnType("text");
 
                     b.Property<string>("ShortName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MovieId");
 
                     b.ToTable("Countries");
                 });
@@ -98,20 +93,15 @@ namespace AIS_Cinema.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("MovieId")
-                        .HasColumnType("int");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MovieId");
 
                     b.ToTable("Genres");
                 });
@@ -120,13 +110,13 @@ namespace AIS_Cinema.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Schema")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -137,6 +127,16 @@ namespace AIS_Cinema.Migrations
                         {
                             Id = 1,
                             Schema = "[{\"Number\":1,\"FrontGap\":0.0,\"BackGap\":0.0,\"Seats\":[{\"Number\":1,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":2,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":3,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":4,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":5,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0}]},{\"Number\":2,\"FrontGap\":0.0,\"BackGap\":0.0,\"Seats\":[{\"Number\":1,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":2,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":3,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":4,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":5,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0}]},{\"Number\":3,\"FrontGap\":0.0,\"BackGap\":0.0,\"Seats\":[{\"Number\":1,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":2,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":3,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":4,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":5,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0}]},{\"Number\":4,\"FrontGap\":0.0,\"BackGap\":0.0,\"Seats\":[{\"Number\":1,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":2,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":3,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":4,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":5,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0}]},{\"Number\":5,\"FrontGap\":0.0,\"BackGap\":0.0,\"Seats\":[{\"Number\":1,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":2,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":3,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":4,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":5,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0}]}]"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Schema = "[{\"Number\":1,\"FrontGap\":0.0,\"BackGap\":0.0,\"Seats\":[{\"Number\":1,\"LeftGap\":0.7,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":2,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":3,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":4,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":5,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":6,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0}]},{\"Number\":2,\"FrontGap\":0.0,\"BackGap\":0.0,\"Seats\":[{\"Number\":1,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":2,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":3,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":4,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":5,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":6,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":7,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0}]},{\"Number\":3,\"FrontGap\":0.0,\"BackGap\":0.0,\"Seats\":[{\"Number\":1,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":2,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":3,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":4,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":5,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":6,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":7,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":8,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0}]},{\"Number\":4,\"FrontGap\":0.0,\"BackGap\":0.0,\"Seats\":[{\"Number\":1,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":2,\"LeftGap\":0.0,\"RightGap\":0.5,\"PriceMultiplier\":1.0},{\"Number\":3,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":4,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":5,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":6,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":7,\"LeftGap\":0.5,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":8,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0}]},{\"Number\":5,\"FrontGap\":0.0,\"BackGap\":0.0,\"Seats\":[{\"Number\":1,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":2,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":3,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":4,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":5,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":6,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":7,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":8,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0}]},{\"Number\":6,\"FrontGap\":0.0,\"BackGap\":0.0,\"Seats\":[{\"Number\":1,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":2,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":3,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":4,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":5,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":6,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":7,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":8,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0}]},{\"Number\":7,\"FrontGap\":0.0,\"BackGap\":0.0,\"Seats\":[{\"Number\":1,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":2,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":3,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":4,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":5,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":6,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":7,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0}]},{\"Number\":8,\"FrontGap\":0.0,\"BackGap\":0.0,\"Seats\":[{\"Number\":1,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":2,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":3,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":4,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":5,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":6,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":7,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0}]}]"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Schema = "[{\"Number\":1,\"FrontGap\":0.0,\"BackGap\":0.0,\"Seats\":[{\"Number\":1,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0}]},{\"Number\":2,\"FrontGap\":0.0,\"BackGap\":0.0,\"Seats\":[{\"Number\":1,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":2,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0}]},{\"Number\":3,\"FrontGap\":0.0,\"BackGap\":0.0,\"Seats\":[{\"Number\":1,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":2,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":3,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0}]},{\"Number\":4,\"FrontGap\":0.0,\"BackGap\":0.0,\"Seats\":[{\"Number\":1,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":2,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":3,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":4,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0}]},{\"Number\":5,\"FrontGap\":0.0,\"BackGap\":0.0,\"Seats\":[{\"Number\":1,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":2,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":3,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":4,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0},{\"Number\":5,\"LeftGap\":0.0,\"RightGap\":0.0,\"PriceMultiplier\":1.0}]}]"
                         });
                 });
 
@@ -144,33 +144,33 @@ namespace AIS_Cinema.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AgeLimitId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasDefaultValue(1);
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("Duration")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("PosterPath")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("ProductionYear")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("ReleaseDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -183,22 +183,22 @@ namespace AIS_Cinema.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("HallId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("MinPrice")
                         .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<int>("MovieId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -213,25 +213,25 @@ namespace AIS_Cinema.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("OwnerEmail")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<int>("RowNumber")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("SeatNumber")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("SessionId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -243,57 +243,57 @@ namespace AIS_Cinema.Migrations
             modelBuilder.Entity("AIS_Cinema.Models.Visitor", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("text");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<long?>("TelegramChatId")
                         .HasColumnType("bigint");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
@@ -302,8 +302,7 @@ namespace AIS_Cinema.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                        .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
 
@@ -318,7 +317,7 @@ namespace AIS_Cinema.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EMAIL.COM",
                             NormalizedUserName = "АДМИНИСТРАТОР",
-                            PasswordHash = "AQAAAAIAAYagAAAAENIBKPxijWzfSlja/j3iQi1sWFqeiwUzYjV0AJrTGbiDQcyefsyHTBKog3wdF/FUrg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDU2LwYi9LJAwb9XtlLTsvhOtvKdNF8N3Hgtp7HQaAIubVECWuN3ATCz07hFEq8IoA==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -326,29 +325,58 @@ namespace AIS_Cinema.Migrations
                         });
                 });
 
+            modelBuilder.Entity("CountryMovie", b =>
+                {
+                    b.Property<int>("CountriesId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MoviesId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("CountriesId", "MoviesId");
+
+                    b.HasIndex("MoviesId");
+
+                    b.ToTable("CountryMovie");
+                });
+
+            modelBuilder.Entity("GenreMovie", b =>
+                {
+                    b.Property<int>("GenresId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MoviesId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("GenresId", "MoviesId");
+
+                    b.HasIndex("MoviesId");
+
+                    b.ToTable("GenreMovie");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                        .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
 
@@ -365,19 +393,19 @@ namespace AIS_Cinema.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -390,19 +418,19 @@ namespace AIS_Cinema.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -415,18 +443,18 @@ namespace AIS_Cinema.Migrations
                 {
                     b.Property<string>("LoginProvider")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("ProviderKey")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("text");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -438,10 +466,10 @@ namespace AIS_Cinema.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("text");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("text");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -460,36 +488,22 @@ namespace AIS_Cinema.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("text");
 
                     b.Property<string>("LoginProvider")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("Name")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("AIS_Cinema.Models.Country", b =>
-                {
-                    b.HasOne("AIS_Cinema.Models.Movie", null)
-                        .WithMany("Countries")
-                        .HasForeignKey("MovieId");
-                });
-
-            modelBuilder.Entity("AIS_Cinema.Models.Genre", b =>
-                {
-                    b.HasOne("AIS_Cinema.Models.Movie", null)
-                        .WithMany("Genres")
-                        .HasForeignKey("MovieId");
                 });
 
             modelBuilder.Entity("AIS_Cinema.Models.Movie", b =>
@@ -533,6 +547,36 @@ namespace AIS_Cinema.Migrations
                     b.Navigation("Session");
                 });
 
+            modelBuilder.Entity("CountryMovie", b =>
+                {
+                    b.HasOne("AIS_Cinema.Models.Country", null)
+                        .WithMany()
+                        .HasForeignKey("CountriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AIS_Cinema.Models.Movie", null)
+                        .WithMany()
+                        .HasForeignKey("MoviesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("GenreMovie", b =>
+                {
+                    b.HasOne("AIS_Cinema.Models.Genre", null)
+                        .WithMany()
+                        .HasForeignKey("GenresId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AIS_Cinema.Models.Movie", null)
+                        .WithMany()
+                        .HasForeignKey("MoviesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -586,10 +630,6 @@ namespace AIS_Cinema.Migrations
 
             modelBuilder.Entity("AIS_Cinema.Models.Movie", b =>
                 {
-                    b.Navigation("Countries");
-
-                    b.Navigation("Genres");
-
                     b.Navigation("Sessions");
                 });
 

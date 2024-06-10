@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System.Reflection.Emit;
 
 namespace AIS_Cinema
 {
@@ -19,7 +20,6 @@ namespace AIS_Cinema
 
         public AISCinemaDbContext(DbContextOptions options) : base(options)
         {
-
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -86,10 +86,21 @@ namespace AIS_Cinema
                 UserId = "aa6c0c49-3d13-433f-bc24-fcf769b6e6e7"
             });
 
-            builder.Entity<Hall>().HasData(new Hall
+            builder.Entity<Hall>().HasData(
+            new Hall
             {
                 Id = 1,
                 Schema = JsonConvert.SerializeObject(HallTemplates.Simple5x5),
+            },
+            new Hall
+            {
+                Id = 2,
+                Schema = JsonConvert.SerializeObject(HallTemplates.Complex8),
+            },
+            new Hall
+            {
+                Id = 3,
+                Schema = JsonConvert.SerializeObject(HallTemplates.Triangle),
             });
         }
     }

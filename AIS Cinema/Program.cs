@@ -8,6 +8,8 @@ using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 

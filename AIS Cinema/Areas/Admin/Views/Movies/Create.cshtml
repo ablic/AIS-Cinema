@@ -1,13 +1,13 @@
 ﻿@model AIS_Cinema.Models.Movie
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Создать";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<h1>Создать</h1>
 
-<h4>Movie</h4>
+<h4>Фильм</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -44,20 +44,49 @@
             </div>
             <div class="form-group">
                 <label asp-for="PosterPath" class="control-label"></label>
-                <input type="file" name="posterFile" accept="image/*" />
+                <input type="file" id="posterFile" name="posterFile" accept="image/*" class="form-control" onchange="previewImage();" />
                 <span asp-validation-for="PosterPath" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <img id="posterPreview" src="#" alt="Постер фильма" style="display: none; max-width: 200px; margin-top: 10px;" />
+            </div>
+            <div class="form-group">
+                <button type="button" class="btn btn-danger mt-2" onclick="clearImage();">Очистить</button>
+            </div>
+            <div class="form-group mt-2">
+                <input type="submit" value="Создать" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Назад к списку</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script type="text/javascript">
+        function previewImage() {
+            var file = document.getElementById('posterFile').files[0];
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var img = document.getElementById('posterPreview');
+                img.src = e.target.result;
+                img.style.display = 'block';
+            };
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function clearImage() {
+            document.getElementById('posterFile').value = '';
+            var img = document.getElementById('posterPreview');
+            img.src = '#';
+            img.style.display = 'none';
+        }
+    </script>
 }

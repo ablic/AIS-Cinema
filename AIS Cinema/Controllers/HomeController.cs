@@ -10,20 +10,20 @@ namespace AIS_Cinema.Controllers
     {
         private readonly AISCinemaDbContext _context;
         private readonly ILogger<HomeController> _logger;
+        private readonly IConfiguration _configuration;
 
-        public HomeController(AISCinemaDbContext context, ILogger<HomeController> logger)
+        public HomeController(AISCinemaDbContext context, ILogger<HomeController> logger, IConfiguration configuration)
         {
             _context = context;
             _logger = logger;
+            _configuration = configuration;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> About()
         {
-            List<MovieCard> cards = await _context.Movies
-                .Select(m => new MovieCard { MovieId = m.Id, Title = m.Name, PosterPath = m.PosterPath})
-                .ToListAsync();
-
-            return View(cards);
+            CompanyInfo companyInfo = new CompanyInfo();
+            _configuration.GetSection("CompanyInfo").Bind(companyInfo);
+            return View(companyInfo);
         }
 
         public IActionResult Privacy()
