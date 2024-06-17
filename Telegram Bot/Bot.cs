@@ -139,7 +139,7 @@ namespace Telegram_Bot
             {
                 var tickets = await GetTicketsAsync(chatId);
 
-                if (tickets.Count() > 0)
+                if (tickets != null && tickets.Count() > 0)
                 {
                     var inlineKeyboard = new InlineKeyboardMarkup(tickets.Select(ticket =>
                     new[]
@@ -199,7 +199,7 @@ namespace Telegram_Bot
         {
             var sessions = await GetSessionsAsync(date);
 
-            if (sessions.Count() > 0)
+            if (sessions != null && sessions.Count() > 0)
             {
                 foreach (var session in sessions)
                 {
