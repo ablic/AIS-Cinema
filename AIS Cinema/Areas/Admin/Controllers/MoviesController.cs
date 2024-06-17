@@ -48,7 +48,7 @@ namespace AIS_Cinema.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Duration,ProductionYear,ReleaseDate,Description,PosterPath")] Movie movie, IFormFile posterFile)
+        public async Task<IActionResult> Create([Bind("Id,Name,Duration,ProductionYear,ReleaseDate,Description,PosterPath")] Movie movie, IFormFile? posterFile)
         {
             if (ModelState.IsValid)
             {
@@ -212,7 +212,7 @@ namespace AIS_Cinema.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Delete(int? id)
+        /*public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
@@ -236,12 +236,13 @@ namespace AIS_Cinema.Areas.Admin.Controllers
             var movie = await _context.Movies.FindAsync(id);
             if (movie != null)
             {
+                _imageWorker.DeleteImage(movie.PosterPath);
                 _context.Movies.Remove(movie);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
+        }*/
 
         private bool MovieExists(int id)
         {

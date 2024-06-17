@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace AIS_Cinema.Models
 {
@@ -12,6 +13,7 @@ namespace AIS_Cinema.Models
         [Display(Name = "Сокращенное название")]
         public string? ShortName { get; set; }
 
+        [JsonIgnore]
         public List<Movie> Movies { get; set; } = new();
     }
 }

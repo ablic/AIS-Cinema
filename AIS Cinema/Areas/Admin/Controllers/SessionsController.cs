@@ -1,33 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AIS_Cinema.Areas.Admin.Models;
+using AIS_Cinema.Areas.Admin.ViewModels;
+using AIS_Cinema.Models;
+using AIS_Cinema.Models.HallLayout;
+using AIS_Cinema.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using AIS_Cinema;
-using AIS_Cinema.Models;
-using AIS_Cinema.Areas.Admin.Models;
-using AIS_Cinema.Areas.Admin.ViewModels;
 using Newtonsoft.Json;
-using AIS_Cinema.Models.HallLayout;
 
 namespace AIS_Cinema.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class SessionsController : Controller
     {
-        private readonly AISCinemaDbContext _context;
+        private const int timeBetweenSessions = 15;
 
-        public SessionsController(AISCinemaDbContext context)
+        private readonly AISCinemaDbContext _context;
+        private readonly EmailSender _emailSender;
+
+        public SessionsController(AISCinemaDbContext context, EmailSender emailSender)
         {
             _context = context;
+            _emailSender = emailSender;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index([FromQuery] int? movieId)
         {
-            var aISCinemaDbContext = _context.Sessions.Include(s => s.Hall).Include(s => s.Movie);
-            return View(await aISCinemaDbContext.ToListAsync());
+            if (movieId == null)
+            {
+                return View(await _context.Sessions
+                    .Include(s => s.Hall)
+                    .Include(s => s.Movie)
+                    .ToListAsync());
+            }
+
+            return View(await _context.Sessions
+                .Where(s => s.MovieId == movieId)
+                .Include(s => s.Hall)
+                .Include(s => s.Movie)
+                .ToListAsync());
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -41,6 +52,7 @@ namespace AIS_Cinema.Areas.Admin.Controllers
                 .Include(s => s.Hall)
                 .Include(s => s.Movie)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (session == null)
             {
                 return NotFound();
@@ -61,28 +73,48 @@ namespace AIS_Cinema.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                TempData["SessionPrimaryData"] = JsonConvert.SerializeObject(sessionPrimaryData);
-                return RedirectToAction(nameof(BindMovie));
+                var overlappingSession = _context.Sessions
+                    .Include(s => s.Movie)
+                    .Any(s => s.HallId == sessionPrimaryData.HallId 
+                        && sessionPrimaryData.DateTime >= s.DateTime.AddMinutes(-timeBetweenSessions)
+                        && sessionPrimaryData.DateTime < s.DateTime.AddMinutes(s.Movie.Duration + timeBetweenSessions));
+
+                if (overlappingSession)
+                {
+                    ModelState.AddModelError("", "В выбранное время в данном зале уже есть другой сеанс.");
+                }
+                else
+                {
+                    TempData["SessionPrimaryData"] = JsonConvert.SerializeObject(sessionPrimaryData);
+                    return RedirectToAction(nameof(BindMovie));
+                }
             }
 
             ViewData["HallId"] = new SelectList(_context.Set<Hall>(), "Id", "Id", sessionPrimaryData.HallId);
             return View(sessionPrimaryData);
         }
 
-        public async Task<IActionResult> Edit(int? id)
+
+        /*public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var session = await _context.Sessions.FindAsync(id);
+            var session = await _context.Sessions
+                .Include(s => s.Hall)
+                .Include(s => s.Movie)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
             if (session == null)
             {
                 return NotFound();
             }
 
-            ViewData["HallId"] = new SelectList(_context.Set<Hall>(), "Id", "Id", session.HallId);
+            ViewData["HallId"] = session.Hall.Id;
+            ViewData["MovieName"] = session.Movie.Name;
+
             return View(new SessionPrimaryData
             {
                 Id = session.Id,
@@ -94,7 +126,7 @@ namespace AIS_Cinema.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind("Id,DateTime,HallId,MinPrice")] SessionPrimaryData sessionPrimaryData)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,DateTime,HallId,MinPrice")] SessionPrimaryData sessionPrimaryData)
         {
             if (id != sessionPrimaryData.Id)
             {
@@ -103,13 +135,31 @@ namespace AIS_Cinema.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                TempData["SessionPrimaryData"] = JsonConvert.SerializeObject(sessionPrimaryData);
-                return RedirectToAction(nameof(BindMovie));
+                try
+                {
+                    var session = await _context.Sessions.FindAsync(id);
+                    session.DateTime = sessionPrimaryData.DateTime;
+
+                    _context.Update(session);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!SessionExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
             }
 
             ViewData["HallId"] = new SelectList(_context.Set<Hall>(), "Id", "Id", sessionPrimaryData.HallId);
             return View(sessionPrimaryData);
-        }
+        }*/
 
         public async Task<IActionResult> BindMovie()
         {
@@ -157,6 +207,34 @@ namespace AIS_Cinema.Areas.Admin.Controllers
                 });
             }
 
+            Movie? selectedMovie = await _context.Movies.FindAsync(selectedMovieId);
+
+            if (selectedMovie == null)
+            {
+                return NotFound();
+            }
+
+            var overlappingSession = _context.Sessions
+                .Include(s => s.Movie)
+                 .Any(s => s.HallId == sessionPrimaryData.HallId &&
+                    s.DateTime < sessionPrimaryData.DateTime.AddMinutes(selectedMovie.Duration + timeBetweenSessions) &&
+                    sessionPrimaryData.DateTime < s.DateTime.AddMinutes(s.Movie.Duration + timeBetweenSessions));
+
+            if (overlappingSession)
+            {
+                ModelState.AddModelError("", "В выбранное время в данном зале уже есть другой сеанс.");
+
+                List<ModelIdWithTitle> movieIdsAndNames = await _context.Movies
+                    .Select(m => new ModelIdWithTitle { Id = m.Id, Title = m.Name })
+                    .ToListAsync();
+
+                return View(new SessionMovieBinding
+                {
+                    DateTimeStr = sessionPrimaryData.DateTime.ToString("dd.MM HH:mm"),
+                    Movies = movieIdsAndNames,
+                });
+            }
+
             Session session = new Session
             {
                 MovieId = (int)selectedMovieId,
@@ -165,34 +243,12 @@ namespace AIS_Cinema.Areas.Admin.Controllers
                 MinPrice = sessionPrimaryData.MinPrice,
             };
 
-            if (sessionPrimaryData.Id != null)
-            {
-                session.Id = (int)sessionPrimaryData.Id;
-                try
-                {
-                    _context.Update(session);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SessionExists(session.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-            }
-            else
-            {
-                _context.Add(session);
-                await _context.SaveChangesAsync();
-                await CreateTicketsForSessionAsync(session);
-                await _context.SaveChangesAsync();
-            }
-            
+            _context.Add(session);
+
+            await _context.SaveChangesAsync();
+            await CreateTicketsForSessionAsync(session);
+            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -220,9 +276,23 @@ namespace AIS_Cinema.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var session = await _context.Sessions.FindAsync(id);
+            var session = await _context.Sessions
+                .Include(s => s.Movie)
+                .Include(s => s.Tickets)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
             if (session != null)
             {
+                var ticketEmails = session.Tickets
+                    .Where(t => t.OwnerEmail != null)
+                    .Select(t => t.OwnerEmail)
+                    .Distinct();
+
+                foreach (string email in ticketEmails)
+                {
+                    await _emailSender.SendSessionCancelledNotificationAsync(email, session);
+                }
+
                 _context.Sessions.Remove(session);
             }
 

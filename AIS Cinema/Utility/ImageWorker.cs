@@ -26,9 +26,10 @@
             return name;
         }
 
-        public void DeleteImage(string path)
+        public void DeleteImage(string? path)
         {
-            File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, FolderName, path));
+            if (!string.IsNullOrEmpty(path))
+                File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, FolderName, path));
         }
     }
 }

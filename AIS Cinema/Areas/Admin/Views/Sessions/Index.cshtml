@@ -14,13 +14,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Movie)
+                @Html.DisplayNameFor(model => model.MovieId)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.DateTime)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Hall)
+                @Html.DisplayNameFor(model => model.HallId)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.MinPrice)
@@ -44,7 +44,8 @@
                 @Html.DisplayFor(modelItem => item.MinPrice)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Редактировать</a> |
+                @* <a asp-action="Edit" asp-route-id="@item.Id">Редактировать</a> | *@
+                <a asp-controller="Tickets" asp-action="Index" asp-route-sessionId="@item.Id">Билеты</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Подробнее</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Удалить</a>
             </td>

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace AIS_Cinema.Models
 {
@@ -9,6 +10,7 @@ namespace AIS_Cinema.Models
         [Display(Name = "Название")]
         public string Name { get; set; } = string.Empty;
 
+        [JsonIgnore]
         public List<Movie> Movies { get; set; } = new ();
     }
 }

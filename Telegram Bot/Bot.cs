@@ -8,8 +8,6 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
-using static System.Net.Mime.MediaTypeNames;
 using Update = Telegram.Bot.Types.Update;
 
 namespace Telegram_Bot
@@ -17,8 +15,8 @@ namespace Telegram_Bot
     internal class Bot
     {
         private const string StartCommand = "/start";
-        private const string SessionsCommand = "/sessions";
-        private const string TicketsCommand = "/tickets";
+        private const string SessionsCommand = "/сеансы";
+        private const string TicketsCommand = "/мои билеты";
         private const int TicketMessageLifetime = 1;
 
         private TelegramBotClient _botClient;
@@ -39,7 +37,7 @@ namespace Telegram_Bot
 
             ReceiverOptions receiverOptions = new()
             {
-                AllowedUpdates = Array.Empty<UpdateType>() // receive all update types except ChatMember related updates
+                AllowedUpdates = Array.Empty<UpdateType>()
             };
 
             _botClient.StartReceiving(

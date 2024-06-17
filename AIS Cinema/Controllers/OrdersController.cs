@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using AIS_Cinema.Services;
+using System.Runtime.CompilerServices;
 
 namespace AIS_Cinema.Controllers
 {
@@ -13,9 +14,9 @@ namespace AIS_Cinema.Controllers
     {
         private readonly AISCinemaDbContext _context;
         private readonly UserManager<Visitor> _userManager;
-        private readonly TicketEmailSender _ticketEmailSender;
+        private readonly EmailSender _ticketEmailSender;
 
-        public OrdersController(AISCinemaDbContext context, UserManager<Visitor> userManager, TicketEmailSender ticketEmailSender)
+        public OrdersController(AISCinemaDbContext context, UserManager<Visitor> userManager, EmailSender ticketEmailSender)
         {
             _context = context;
             _userManager = userManager;
@@ -175,13 +176,22 @@ namespace AIS_Cinema.Controllers
                         Ticket ticket = session.Tickets
                             .FirstOrDefault(t => t.RowNumber == r.Number && t.SeatNumber == s.Number);
 
+                        int ticketId = 0;
+                        bool isTaken = true;
+
+                        if (ticket != null)
+                        {
+                            ticketId = ticket.Id;
+                            isTaken = ticket.IsBought;
+                        }
+
                         return new SeatViewModel
                         {
                             LeftGap = s.LeftGap,
                             RightGap = s.RightGap,
                             Price = (decimal)s.PriceMultiplier * session.MinPrice,
-                            TicketId = ticket.Id,
-                            IsTaken = ticket.IsBought,
+                            TicketId = ticketId,
+                            IsTaken = isTaken,
                         };
                     })
                     .ToList(),

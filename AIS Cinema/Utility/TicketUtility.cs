@@ -1,4 +1,5 @@
 ﻿using AIS_Cinema.Models;
+using Newtonsoft.Json;
 
 namespace AIS_Cinema
 {
@@ -6,7 +7,14 @@ namespace AIS_Cinema
     {
         public static byte[] GetQrCode(this Ticket ticket)
         {
-            string data = string.Join(' ', ticket.Id, ticket.RowNumber, ticket.SeatNumber);
+            string data = JsonConvert.SerializeObject(new
+            {
+                ticket.Id,
+                ticket.SessionId,
+                ticket.Price,
+                ticket.OwnerEmail
+            });
+
             return QRCodeGenerator.GenerateQRCode(data);
         }
     }

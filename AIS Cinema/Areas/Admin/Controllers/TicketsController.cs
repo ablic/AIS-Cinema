@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AIS_Cinema.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using AIS_Cinema;
-using AIS_Cinema.Models;
 
 namespace AIS_Cinema.Areas.Admin.Controllers
 {
@@ -20,10 +15,19 @@ namespace AIS_Cinema.Areas.Admin.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index([FromQuery] int? sessionId)
         {
-            var aISCinemaDbContext = _context.Tickets.Include(t => t.Session);
-            return View(await aISCinemaDbContext.ToListAsync());
+            if (sessionId == null)
+            {
+                return View(await _context.Tickets
+                    .Include(t => t.Session)
+                    .ToListAsync());
+            }
+
+            return View(await _context.Tickets
+                .Where(t => t.SessionId == sessionId)
+                .Include(t => t.Session)
+                .ToListAsync());
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -67,7 +71,7 @@ namespace AIS_Cinema.Areas.Admin.Controllers
             return View(ticket);
         }
 
-        public async Task<IActionResult> Edit(int? id)
+        /*public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
@@ -116,7 +120,7 @@ namespace AIS_Cinema.Areas.Admin.Controllers
 
             ViewData["SessionId"] = new SelectList(_context.Sessions, "Id", "Id", ticket.SessionId);
             return View(ticket);
-        }
+        }*/
 
         // GET: Admin/Tickets/Delete/5
         public async Task<IActionResult> Delete(int? id)

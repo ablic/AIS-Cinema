@@ -44,7 +44,9 @@
         <input asp-for="CVV" class="form-control" placeholder="Введите CVV" id="cvv">
         <span asp-validation-for="CVV" class="text-danger"></span>
     </div>
-    <input type="submit" class="btn btn-primary" value="Оплатить">
+    <div class="form-group mt-2">
+        <input type="submit" class="btn btn-primary" value="Оплатить">
+    </div>
 </form>
 
 @section Scripts {

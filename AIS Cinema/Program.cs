@@ -34,8 +34,8 @@ builder.Services
     .AddEntityFrameworkStores<AISCinemaDbContext>();
 
 builder.Services.AddTransient<ImageWorker>();
-builder.Services.AddTransient<TicketEmailSender>();
-builder.Services.AddHostedService<SessionCleanupService>();
+builder.Services.AddTransient<EmailSender>();
+builder.Services.AddHostedService<OldDataCleanupService>();
 
 var app = builder.Build();
 
