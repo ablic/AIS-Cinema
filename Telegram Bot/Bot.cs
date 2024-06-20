@@ -238,7 +238,7 @@ namespace Telegram_Bot
                 var message = await _botClient.SendPhotoAsync(
                     chatId,
                     inputOnlineFile,
-                    caption: $"Билет на фильм {ticket.Session.Movie.Name}. Это сообщение будет удалено через {TicketMessageLifetime} мин.",
+                    caption: $"{ticket.Session.Movie.Name}\n{ticket.Session.DateTime.FormatDateTime()}\nРяд: {ticket.RowNumber}, место: {ticket.SeatNumber}\n\n Это сообщение будет удалено через {TicketMessageLifetime} мин.",
                     cancellationToken: cancellationToken);
 
                 var timer = new Timer(async state =>

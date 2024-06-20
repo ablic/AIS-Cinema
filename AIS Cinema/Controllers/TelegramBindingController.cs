@@ -40,13 +40,18 @@ namespace AIS_Cinema.Controllers
         [Route("telegramBinding/login/{chatId}")]
         public async Task<IActionResult> Login(TelegramLoginModel model)
         {
-            var chatId = long.Parse(TempData["ChatId"].ToString());
-
             var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Пользователь с таким Email не найден. Если вы не зарегистрированы, сделайте это, используя ссылку ниже");
+                return View(model);
+            }
+            
             var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
 
             if (result.Succeeded)
             {
+                var chatId = long.Parse(TempData["ChatId"].ToString());
                 user.TelegramChatId = chatId;
                 var result2 = await _userManager.UpdateAsync(user);
 
@@ -56,8 +61,10 @@ namespace AIS_Cinema.Controllers
                 }
             }
 
-            return View();
+            ModelState.AddModelError("", "Не удалось выполнить вход. Пожалуйста, проверьте правильность введенных данных.");
+            return View(model);
         }
+
 
         [HttpGet]
         public IActionResult Success()
