@@ -50,14 +50,13 @@
 </form>
 
 @section Scripts {
-    <script>
-        $(document).ready(function () {
-            Inputmask("9999 9999 9999 9999").mask("#cardNumber");
-            Inputmask("99/99").mask("#expiryDate");
-            Inputmask("999").mask("#cvv");
-        });
-    </script>
+    
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        $('#cardNumber').mask("9999 9999 9999 9999");
+        $('#expiryDate').mask("99/99");
+        $('#cvv').mask("999");
+    </script>
 }
