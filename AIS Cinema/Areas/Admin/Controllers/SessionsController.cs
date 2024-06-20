@@ -3,6 +3,7 @@ using AIS_Cinema.Areas.Admin.ViewModels;
 using AIS_Cinema.Models;
 using AIS_Cinema.Models.HallLayout;
 using AIS_Cinema.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using Newtonsoft.Json;
 namespace AIS_Cinema.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "admin")]
     public class SessionsController : Controller
     {
         private const int timeBetweenSessions = 15;

@@ -61,7 +61,7 @@
                     @description
                 </td>
                 <td>
-                    <img src="@("~/" + item.PosterPath)" alt="@item.Name" style="max-width: 100px;" />
+                    <img src="@("~/" + ImageWorker.FolderName + "/" + item.PosterPath)" asp-append-version="true" style="max-width: 100px;" />
                 </td>
                 <td>
                     <a asp-area="Admin" asp-controller="Sessions" asp-action="Index" asp-route-movieId="@item.Id">Сеансы</a> |

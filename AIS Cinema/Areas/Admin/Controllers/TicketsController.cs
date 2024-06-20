@@ -1,4 +1,6 @@
 ﻿using AIS_Cinema.Models;
+using AIS_Cinema.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -6,13 +8,16 @@ using Microsoft.EntityFrameworkCore;
 namespace AIS_Cinema.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "admin")]
     public class TicketsController : Controller
     {
         private readonly AISCinemaDbContext _context;
+        private readonly EmailSender _emailSender;
 
-        public TicketsController(AISCinemaDbContext context)
+        public TicketsController(AISCinemaDbContext context, EmailSender emailSender)
         {
             _context = context;
+            _emailSender = emailSender;
         }
 
         public async Task<IActionResult> Index([FromQuery] int? sessionId)
@@ -156,6 +161,48 @@ namespace AIS_Cinema.Areas.Admin.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }*/
+
+        public async Task<IActionResult> Refund(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var ticket = await _context.Tickets
+                .Include(t => t.Session)
+                .ThenInclude(s => s.Movie)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (ticket == null)
+            {
+                return NotFound();
+            }
+
+            return View(ticket);
+        }
+
+        // POST: Admin/Tickets/Delete/5
+        [HttpPost, ActionName("Refund")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RefundConfirmed(int id)
+        {
+            var ticket = await _context.Tickets
+                .Include(t => t.Session)
+                .ThenInclude(s => s.Movie)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (ticket != null && ticket.OwnerEmail != null)
+            {
+                await _emailSender.SendRefundRequestNotificationAsync(ticket.OwnerEmail, ticket);
+
+                ticket.OwnerEmail = null;
+                _context.Update(ticket);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
 
         private bool TicketExists(int id)
         {

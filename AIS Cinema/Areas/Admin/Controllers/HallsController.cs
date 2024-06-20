@@ -7,10 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AIS_Cinema;
 using AIS_Cinema.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AIS_Cinema.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "admin")]
     public class HallsController : Controller
     {
         private readonly AISCinemaDbContext _context;

@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using AIS_Cinema.Models;
 using AIS_Cinema.Areas.Admin.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AIS_Cinema.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "admin")]
     public class MoviesController : Controller
     {
         private readonly AISCinemaDbContext _context;

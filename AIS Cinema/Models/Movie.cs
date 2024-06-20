@@ -28,6 +28,8 @@ namespace AIS_Cinema.Models
 
         [Display(Name = "Описание")]
         public string? Description { get; set; }
+
+        [Display(Name = "Постер")]
         public string? PosterPath { get; set; }
         public List<Genre> Genres { get; set; } = new();
         public List<Country> Countries { get; set; } = new();

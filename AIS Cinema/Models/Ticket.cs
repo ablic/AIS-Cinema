@@ -27,7 +27,7 @@ namespace AIS_Cinema.Models
         public decimal Price { get; set; }
 
         [DataType(DataType.EmailAddress)]
-        [Display(Name = "Электронная почта для отправки билетов")]
+        [Display(Name = "Электронная почта владельца")]
         public string? OwnerEmail { get; set; }
 
         [NotMapped]

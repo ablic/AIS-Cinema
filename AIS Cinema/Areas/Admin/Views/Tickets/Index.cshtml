@@ -51,6 +51,12 @@
             <td>
                     @* <a asp-action="Edit" asp-route-id="@item.Id">Редактировать</a> | *@
                     <a asp-action="Details" asp-route-id="@item.Id">Подробнее</a> |
+
+                    @if (item.OwnerEmail != null)
+                    {
+                        <a asp-action="Refund" asp-route-id="@item.Id">Возврат</a>
+                    }
+                        
                     @* <a asp-action="Delete" asp-route-id="@item.Id">Удалить</a> *@
             </td>
         </tr>
